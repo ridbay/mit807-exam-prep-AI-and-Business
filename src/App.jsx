@@ -145,7 +145,7 @@ const App = () => {
           </h1>
         </div>
 
-        <button
+        {/* <button
           onClick={() => setIsDarkMode(!isDarkMode)}
           className="glass-card"
           style={{
@@ -159,7 +159,7 @@ const App = () => {
           }}
         >
           {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-        </button>
+        </button> */}
       </header>
 
       {/* Main Content */}
