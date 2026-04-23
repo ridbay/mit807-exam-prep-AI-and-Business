@@ -1,83 +1,171 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutDashboard, BookOpen, Zap, Target, TriangleAlert, Home, Moon, Sun } from 'lucide-react';
-import { useStore } from './hooks/useStore';
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  LayoutDashboard,
+  BookOpen,
+  Zap,
+  Target,
+  TriangleAlert,
+  Home,
+  Moon,
+  Sun,
+} from "lucide-react";
+import { useStore } from "./hooks/useStore";
 
 // Components
-import Dashboard from './components/Dashboard';
-import Summaries from './components/modules/Summaries';
-import Flashcards from './components/modules/Flashcards';
-import QuizMode from './components/modules/QuizMode';
-import Revision from './components/modules/Revision';
-import ReviewCenter from './components/ReviewCenter';
+import Dashboard from "./components/Dashboard";
+import Summaries from "./components/modules/Summaries";
+import Flashcards from "./components/modules/Flashcards";
+import QuizMode from "./components/modules/QuizMode";
+import Revision from "./components/modules/Revision";
+import ReviewCenter from "./components/ReviewCenter";
 
 const App = () => {
-  const { data, progress, toggleBookmark, markFlashcard, saveQuizScore } = useStore();
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const { data, progress, toggleBookmark, markFlashcard, saveQuizScore } =
+    useStore();
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [isDarkMode, setIsDarkMode] = useState(true);
 
   const renderContent = () => {
-    if (!data) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading Study Packet...</div>;
+    if (!data)
+      return (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+          }}
+        >
+          Loading Study Packet...
+        </div>
+      );
 
     switch (activeTab) {
-      case 'dashboard':
-        return <Dashboard progress={progress} data={data} onNavigate={setActiveTab} />;
-      case 'summaries':
-        return <Summaries data={data} progress={progress} onToggleBookmark={toggleBookmark} />;
-      case 'flashcards':
+      case "dashboard":
+        return (
+          <Dashboard
+            progress={progress}
+            data={data}
+            onNavigate={setActiveTab}
+          />
+        );
+      case "summaries":
+        return (
+          <Summaries
+            data={data}
+            progress={progress}
+            onToggleBookmark={toggleBookmark}
+          />
+        );
+      case "flashcards":
         return <Flashcards data={data} onMark={markFlashcard} />;
-      case 'quiz':
+      case "quiz":
         return <QuizMode data={data} onSaveScore={saveQuizScore} />;
-      case 'revision':
+      case "revision":
         return <Revision data={data} />;
-      case 'review':
-        return <ReviewCenter data={data} progress={progress} onNavigate={setActiveTab} />;
+      case "review":
+        return (
+          <ReviewCenter
+            data={data}
+            progress={progress}
+            onNavigate={setActiveTab}
+          />
+        );
       default:
-        return <Dashboard progress={progress} data={data} onNavigate={setActiveTab} />;
+        return (
+          <Dashboard
+            progress={progress}
+            data={data}
+            onNavigate={setActiveTab}
+          />
+        );
     }
   };
 
   const navItems = [
-    { id: 'dashboard', label: 'Home', icon: <Home size={20} /> },
-    { id: 'summaries', label: 'Guide', icon: <BookOpen size={20} /> },
-    { id: 'flashcards', label: 'Cards', icon: <Zap size={20} /> },
-    { id: 'quiz', label: 'Quiz', icon: <Target size={20} /> },
-    { id: 'review', label: 'Review', icon: <TriangleAlert size={20} /> },
+    { id: "dashboard", label: "Home", icon: <Home size={20} /> },
+    { id: "summaries", label: "Guide", icon: <BookOpen size={20} /> },
+    { id: "flashcards", label: "Cards", icon: <Zap size={20} /> },
+    { id: "quiz", label: "Quiz", icon: <Target size={20} /> },
+    { id: "review", label: "Review", icon: <TriangleAlert size={20} /> },
   ];
 
   return (
-    <div className={`app-container ${isDarkMode ? 'dark-mode' : 'light-mode'}`} style={{ minHeight: '100vh', paddingBottom: '100px' }}>
+    <div
+      className={`app-container ${isDarkMode ? "dark-mode" : "light-mode"}`}
+      style={{ minHeight: "100vh", paddingBottom: "100px" }}
+    >
       {/* Top Header */}
-      <header style={{ 
-        padding: '1.5rem 10%', 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        background: 'rgba(240, 10, 4, 0.8)',
-        backdropFilter: 'blur(10px)',
-        position: 'sticky',
-        top: 0,
-        zIndex: 100,
-        borderBottom: '1px solid var(--surface-border)'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => setActiveTab('dashboard')}>
-          <div style={{ width: '36px', height: '36px', background: 'var(--primary)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <header
+        style={{
+          padding: "1.5rem 10%",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          background: "rgba(240, 10, 4, 0.8)",
+          backdropFilter: "blur(10px)",
+          position: "sticky",
+          top: 0,
+          zIndex: 100,
+          borderBottom: "1px solid var(--surface-border)",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            cursor: "pointer",
+          }}
+          onClick={() => setActiveTab("dashboard")}
+        >
+          <div
+            style={{
+              width: "36px",
+              height: "36px",
+              background: "var(--primary)",
+              borderRadius: "10px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             <LayoutDashboard size={20} color="white" />
           </div>
-          <h1 style={{ fontSize: '1.4rem', fontWeight: 800, letterSpacing: '-0.02em' }}>MIT807 <span style={{ opacity: 0.6, fontWeight: 400 }}>StudyHub</span></h1>
+          <h1
+            style={{
+              fontSize: "1.4rem",
+              fontWeight: 800,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            MIT807{" "}
+            <span style={{ opacity: 0.6, fontWeight: 400 }}>by RIDBAY</span>
+          </h1>
         </div>
-        
-        <button 
+
+        <button
           onClick={() => setIsDarkMode(!isDarkMode)}
           className="glass-card"
-          style={{ padding: '10px', borderRadius: '50%', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          style={{
+            padding: "10px",
+            borderRadius: "50%",
+            width: "44px",
+            height: "44px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
         </button>
       </header>
 
       {/* Main Content */}
-      <main style={{ padding: '3rem 10%', maxWidth: '1400px', margin: '0 auto' }}>
+      <main
+        style={{ padding: "3rem 10%", maxWidth: "1400px", margin: "0 auto" }}
+      >
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -92,35 +180,38 @@ const App = () => {
       </main>
 
       {/* Bottom Navigation (Mobile Friendly) */}
-      <nav style={{
-        position: 'fixed',
-        bottom: '2rem',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        background: 'rgba(255, 255, 255, 0.05)',
-        backdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        padding: '0.8rem',
-        borderRadius: '24px',
-        display: 'flex',
-        gap: '0.5rem',
-        zIndex: 1000,
-        boxShadow: '0 20px 40px rgba(0,0,0,0.4)'
-      }}>
-        {navItems.map(item => (
+      <nav
+        style={{
+          position: "fixed",
+          bottom: "2rem",
+          left: "50%",
+          transform: "translateX(-50%)",
+          background: "rgba(255, 255, 255, 0.05)",
+          backdropFilter: "blur(20px)",
+          border: "1px solid rgba(255, 255, 255, 0.1)",
+          padding: "0.8rem",
+          borderRadius: "24px",
+          display: "flex",
+          gap: "0.5rem",
+          zIndex: 1000,
+          boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
+        }}
+      >
+        {navItems.map((item) => (
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
             style={{
-              padding: '0.8rem 1.5rem',
-              borderRadius: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              background: activeTab === item.id ? 'var(--primary)' : 'transparent',
-              color: activeTab === item.id ? 'white' : 'var(--text-muted)',
-              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-              fontWeight: 600
+              padding: "0.8rem 1.5rem",
+              borderRadius: "16px",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              background:
+                activeTab === item.id ? "var(--primary)" : "transparent",
+              color: activeTab === item.id ? "white" : "var(--text-muted)",
+              transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              fontWeight: 600,
             }}
           >
             {item.icon}
