@@ -24,8 +24,8 @@ export const parseMarkdown = (markdown) => {
       if (title.includes('overview')) currentSection = 'overview';
       else if (title.includes('summary')) currentSection = 'summaries';
       else if (title.includes('flashcards')) currentSection = 'flashcards';
-      else if (title.includes('quiz')) currentSection = 'quiz';
-      else if (title.includes('revision')) currentSection = 'revisionSheet';
+      else if (title.includes('quiz') || title.includes('multiple choice')) currentSection = 'quiz';
+      else if (title.includes('revision') || title.includes('last-minute')) currentSection = 'revisionSheet';
       else if (title.includes('comparison')) currentSection = 'comparisonTable';
       return;
     }
@@ -34,8 +34,8 @@ export const parseMarkdown = (markdown) => {
     if (line.startsWith('## ')) {
       currentSubSection = line.replace('## ', '').trim();
       if (currentSection === 'quiz') {
-        if (currentSubSection.includes('Multiple-Choice')) currentSection = 'mcqs';
-        else if (currentSubSection.includes('Short-Answer')) currentSection = 'shortAnswers';
+        if (currentSubSection.includes('Multiple-Choice') || currentSubSection.toLowerCase().includes('choice')) currentSection = 'mcqs';
+        else if (currentSubSection.includes('Short-Answer') || currentSubSection.toLowerCase().includes('short')) currentSection = 'shortAnswers';
       }
       if (currentSection === 'summaries') {
         sections.summaries.push({ title: currentSubSection, content: [] });
@@ -52,21 +52,21 @@ export const parseMarkdown = (markdown) => {
       if (lastSummary) lastSummary.content.push(line);
     } 
     else if (currentSection === 'flashcards') {
-      if (trimmed.startsWith('**Q:**') || (trimmed.match(/^\d+\./) && trimmed.includes('**Q:**'))) {
-        const question = trimmed.replace(/.*\*\*Q:\*\*\s*/, '').trim();
+      if (trimmed.startsWith('**Q:**') || trimmed.startsWith('Q:') || (trimmed.match(/^\d+\./) && trimmed.includes('Q:'))) {
+        const question = trimmed.replace(/.*Q:\s*/, '').replace(/\s*\*\*/g, '').trim();
         currentItem = { question, answer: '', topic: currentSubSection };
         sections.flashcards.push(currentItem);
-      } else if (trimmed.startsWith('**A:**')) {
+      } else if (trimmed.startsWith('**A:**') || trimmed.startsWith('A:')) {
         if (currentItem) {
-          currentItem.answer = trimmed.replace('**A:**', '').trim();
+          currentItem.answer = trimmed.replace(/.*A:\s*/, '').replace(/\s*\*\*/g, '').trim();
         }
       }
     } 
     else if (currentSection === 'mcqs') {
-      const mcqMatch = trimmed.match(/^\d+\.\s+\*\*(.*)\*\*/);
-      if (mcqMatch) {
+      const mcqMatch = trimmed.match(/^\d+\.\s+(.*)/);
+      if (mcqMatch && !trimmed.includes('**Answer:**') && !trimmed.includes('**Explanation:**')) {
         currentItem = { 
-          question: mcqMatch[1], 
+          question: mcqMatch[1].replace(/\*\*/g, ''), 
           options: {}, 
           answer: '', 
           explanation: '',
@@ -78,19 +78,22 @@ export const parseMarkdown = (markdown) => {
           const letter = trimmed[0];
           currentItem.options[letter] = trimmed.substring(3).trim();
         }
-      } else if (trimmed.startsWith('**Answer:**')) {
-        if (currentItem) currentItem.answer = trimmed.replace('**Answer:**', '').trim();
-      } else if (trimmed.startsWith('**Explanation:**')) {
-        if (currentItem) currentItem.explanation = trimmed.replace('**Explanation:**', '').trim();
+      } else if (trimmed.includes('**Answer:**')) {
+        if (currentItem) currentItem.answer = trimmed.replace(/.*\*\*Answer:\*\*\s*/, '').trim();
+      } else if (trimmed.includes('**Explanation:**')) {
+        if (currentItem) currentItem.explanation = trimmed.replace(/.*\*\*Explanation:\*\*\s*/, '').trim();
       }
     } 
     else if (currentSection === 'shortAnswers') {
-      const saMatch = trimmed.match(/^\d+\.\s+\*\*(.*)\*\*/);
-      if (saMatch) {
-        currentItem = { question: saMatch[1], guide: '' };
+      const saMatch = trimmed.match(/^\d+\.\s+(.*)/);
+      if (saMatch && !trimmed.includes('**Guide:**')) {
+        currentItem = { question: saMatch[1].replace(/\*\*/g, ''), guide: '' };
         sections.shortAnswers.push(currentItem);
-      } else if (trimmed.startsWith('**Guide:**')) {
-        if (currentItem) currentItem.guide = trimmed.replace('**Guide:**', '').trim();
+      } else if (trimmed.includes('**Guide:**')) {
+        if (currentItem) currentItem.guide = trimmed.replace(/.*\*\*Guide:\*\*\s*/, '').trim();
+      } else if (trimmed.startsWith('A:') && currentSection === 'shortAnswers') {
+        // Handle Q/A style in short answers if needed
+        if (currentItem) currentItem.guide = trimmed.replace('A:', '').trim();
       }
     }
     else if (currentSection === 'revisionSheet') {

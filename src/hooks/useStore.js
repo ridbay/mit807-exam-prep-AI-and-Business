@@ -1,11 +1,25 @@
 import { useState, useEffect } from 'react';
 import { parseMarkdown } from '../utils/parser';
 import { studyPacketRaw } from '../data/studyPacket';
+import { studyPacket2Raw } from '../data/studyPacket2';
 
 const STORAGE_KEY = 'mit807_study_progress';
 
 export const useStore = () => {
-  const [data] = useState(() => parseMarkdown(studyPacketRaw));
+  const [data] = useState(() => {
+    const p1 = parseMarkdown(studyPacketRaw);
+    const p2 = parseMarkdown(studyPacket2Raw);
+    
+    return {
+      overview: [...p1.overview, ...p2.overview],
+      summaries: [...p1.summaries, ...p2.summaries],
+      flashcards: [...p1.flashcards, ...p2.flashcards],
+      mcqs: [...p1.mcqs, ...p2.mcqs.map(m => ({ ...m, id: m.id + p1.mcqs.length }))],
+      shortAnswers: [...p1.shortAnswers, ...p2.shortAnswers],
+      revisionSheet: [...p1.revisionSheet, ...p2.revisionSheet],
+      comparisonTable: [...p1.comparisonTable, ...p2.comparisonTable]
+    };
+  });
   const [progress, setProgress] = useState(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     return saved ? JSON.parse(saved) : {
